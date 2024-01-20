@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {createQuestions, getAllSubject} from "../../utils/QuizService.jsx";
 
 const AddQuestion = () => {
@@ -10,7 +10,9 @@ const AddQuestion = () => {
     const [newSubject, setNewSubject] = useState("")
     const [subjectOptions, setSubjectOptions] = useState([""])
 
-
+    useEffect(() => {
+        fetchSubjects()
+    }, []);
     const fetchSubjects = async () => {
         try {
             const subjectData = await getAllSubject()
@@ -117,13 +119,105 @@ const AddQuestion = () => {
                                                className="form-control"/>
 
                                         <button type="button"
-                                        className="btn btn-outline-primary btn-sm mt-2"
-                                        onClick={handleAddSubject}>
+                                                className="btn btn-outline-primary btn-sm mt-2"
+                                                onClick={handleAddSubject}>
                                             Add Subject
                                         </button>
                                     </div>
                                 )}
-                                <div className="mb-2"></div>
+                                <div className="mb-2">
+                                    <label className="form-label text-info">Question</label>
+                                    <textarea className="form-control" rows={4} value={question}
+                                              onChange={(e) => setQuestion(e.target.value)}>
+
+                                    </textarea>
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label text-info">Question Type</label>
+                                    <select
+                                        className="form-control"
+                                        id="question-type"
+                                        value={questionType}
+                                        onChange={(e) => setQuestionType(e.target.value)}
+                                    >
+                                        <option value={"single"}>Single Answer</option>
+                                        <option value={"multiple"}>Multiple Answer</option>
+
+                                    </select>
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label text-info">Choices</label>
+                                    {choices.map((choice, index) => (
+                                        <div key={index} className="input-group mb-3">
+                                            <input
+                                                className="form-control"
+                                                type={choice}
+                                                onChange={(e) => handleChoiceChange(index, e.target.value)}
+                                            />
+                                            <button className="btn btn-outline-danger btn-sm" type="button"
+                                                    onClick={() => handleRemoveChoice()}>Remove
+                                            </button>
+                                        </div>
+                                    ))}
+                                    <button className="btn btn-outline-primary btn-sm" type="button"
+                                            onClick={() => handleAddChoice()}>Add Choice
+                                    </button>
+
+                                </div>
+                                {questionType === "single" && (
+                                    <div className="mb-3">
+                                        <label className="form-label text-info">
+                                            Correct Answer
+                                        </label>
+                                        <input className="form-control"
+                                               type="text"
+                                               value={correctAnswer}
+                                               onChange={(e) => handleCorrectAnswerChange(0, e.target.value)}/>
+
+                                    </div>
+                                )}
+
+                                {questionType === "multiple" && (
+                                    <div className="mb-3">
+                                        <label className="form-label text-info">
+                                            Correct Answer (s)
+                                        </label>
+                                        {correctAnswer.map((answer, index) => (
+                                            <div>
+                                                <input className="form-control"
+                                                       type="text"
+                                                       value={answer}
+                                                       onChange={(e) => handleCorrectAnswerChange(i, e.target.value)}/>
+                                                {index > 0 && (
+                                                    <button
+                                                        className="btn-outline-danger btn-sm"
+                                                        type="button"
+                                                        onClick={() => handleRemoveCorrectAnswer(index)}>
+                                                        Remove
+                                                    </button>)}
+                                            </div>
+                                        ))}
+                                        <button
+                                            className="btn btn-outline-info"
+                                            type="button"
+                                            onClick={handleCorrectAnswer}>
+                                            Add correct answer
+                                        </button>
+
+                                    </div>
+                                )}
+                                {!correctAnswer.length && <p>PLease enter a least correct answer.</p>}
+                                <div>
+                                    <button type="button"
+                                            className="btn btn-outline-success mr-2"
+                                    >Save
+                                        Question
+                                    </button>
+                                    {/*<Link to={}
+                                     className="btn btn-outline-success mr-2"
+                               >Save
+                                   Question</Link>*/}
+                                </div>
                             </form>
                         </div>
                     </div>
